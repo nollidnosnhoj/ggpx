@@ -1,5 +1,5 @@
 {
-  "name": "@acme/nextjs",
+  "name": "@ggpx/nextjs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "@ggpx/auth": "*",
     "@ggpx/config": "*",
     "@ggpx/db": "*",
-    "@ggpx/lib": "*",
+    "@ggpx/schemas": "*",
     "@ggpx/tailwind-config": "*",
     "@tanstack/react-query": "^4.20.4",
     "@trpc/client": "^10.8.1",

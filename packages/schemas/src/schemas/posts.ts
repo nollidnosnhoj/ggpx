@@ -30,7 +30,7 @@ export const createPostsSchema = z
     gameId: z.number().min(1),
     imageWidth: z.number().min(720),
     imageHeight: z.number().min(720),
-    tags: tagsSchema({}),
+    tags: tagsSchema,
   })
   .array()
   .min(1)

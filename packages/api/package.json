@@ -13,7 +13,7 @@
     "@ggpx/auth": "*",
     "@ggpx/cache": "*",
     "@ggpx/db": "*",
-    "@ggpx/lib": "*",
+    "@ggpx/schemas": "*",
     "@ggpx/storage": "*",
     "@trpc/client": "^10.8.1",
     "@trpc/server": "^10.8.1",

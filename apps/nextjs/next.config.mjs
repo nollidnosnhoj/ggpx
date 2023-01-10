@@ -3,18 +3,18 @@
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
  */
-!process.env.SKIP_ENV_VALIDATION && (await import("./src/env/server.mjs"));
+!process.env.SKIP_ENV_VALIDATION && (await import("./src/env/client.mjs"));
 
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
-    "@acme/api",
-    "@acme/auth",
+    "@ggpx/api",
+    "@ggpx/auth",
     "@ggpx/config",
     "@ggpx/db",
-    "@ggpx/lib",
+    "@ggpx/schemas",
   ],
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: !!process.env.CI },

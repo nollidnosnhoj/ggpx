@@ -6,5 +6,5 @@ packages:
   - packages/db
   - packages/cache
   - packages/config/*
-  - packages/lib
+  - packages/schemas
   - packages/storage

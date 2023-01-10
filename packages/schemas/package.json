@@ -1,8 +1,8 @@
 {
-  "name": "@ggpx/lib",
+  "name": "@ggpx/schemas",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@ggpx/config": "*",
-    "zod": "^3.20.0"
+    "slug": "^8.2.2",
+    "zod": "^3.20.2"
   }
 }

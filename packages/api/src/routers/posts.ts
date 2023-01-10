@@ -1,9 +1,9 @@
-import { createPostsSchema, uploadImagesSchema } from "@ggpx/lib";
+import { createPostsSchema, uploadImagesSchema } from "@ggpx/schemas";
 import type { Game, PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { env } from "../env.mjs";
+import { env } from "../env";
 import addIgdbClient from "../middlewares/igdb";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { splitFileName, getContentType } from "../file";

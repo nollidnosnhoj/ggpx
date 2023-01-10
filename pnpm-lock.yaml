@@ -30,7 +30,7 @@ importers:
       '@ggpx/auth': '*'
       '@ggpx/config': '*'
       '@ggpx/db': '*'
-      '@ggpx/lib': '*'
+      '@ggpx/schemas': '*'
       '@ggpx/tailwind-config': '*'
       '@tanstack/react-query': ^4.20.4
       '@trpc/client': ^10.8.1
@@ -57,7 +57,7 @@ importers:
       '@ggpx/auth': link:../../packages/auth
       '@ggpx/config': link:../../packages/config/ggpx
       '@ggpx/db': link:../../packages/db
-      '@ggpx/lib': link:../../packages/lib
+      '@ggpx/schemas': link:../../packages/schemas
       '@ggpx/tailwind-config': link:../../packages/config/tailwind
       '@tanstack/react-query': 4.22.0_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.8.1_@trpc+server@10.8.1
@@ -86,7 +86,7 @@ importers:
       '@ggpx/auth': '*'
       '@ggpx/cache': '*'
       '@ggpx/db': '*'
-      '@ggpx/lib': '*'
+      '@ggpx/schemas': '*'
       '@ggpx/storage': '*'
       '@trpc/client': ^10.8.1
       '@trpc/server': ^10.8.1
@@ -103,7 +103,7 @@ importers:
       '@ggpx/auth': link:../auth
       '@ggpx/cache': link:../cache
       '@ggpx/db': link:../db
-      '@ggpx/lib': link:../lib
+      '@ggpx/schemas': link:../schemas
       '@ggpx/storage': link:../storage
       '@trpc/client': 10.8.1_@trpc+server@10.8.1
       '@trpc/server': 10.8.1
@@ -173,12 +173,14 @@ importers:
       prisma: 4.8.1
       typescript: 4.9.4
 
-  packages/lib:
+  packages/schemas:
     specifiers:
       '@ggpx/config': '*'
-      zod: ^3.20.0
+      slug: ^8.2.2
+      zod: ^3.20.2
     dependencies:
       '@ggpx/config': link:../config/ggpx
+      slug: 8.2.2
       zod: 3.20.2
 
   packages/storage:
