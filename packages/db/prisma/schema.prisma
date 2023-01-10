@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    // provider = "postgres"
+    provider = "postgresql"
+    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // Further reading: 
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    url      = env("DATABASE_URL")
+}
+
+enum PostFx {
+    Vanilla
+    Reshade
+    ENB
+    Others
+}
+
+enum Severity {
+    SafeForWork
+    Suggestive
+    NotSafeForWork
+}
+
+model Game {
+    id    Int    @id
+    name  String
+    slug  String
+    posts Post[]
+
+    @@index([name])
+    @@index([slug])
+}
+
+model Post {
+    id               String         @id
+    title            String         @db.VarChar(200)
+    caption          String?        @db.Text
+    fileSize         Int
+    fileExtension    String         @db.VarChar(50)
+    fileType         String         @db.VarChar(50)
+    imageWidth       Int
+    imageHeight      Int
+    postFx           PostFx         @default(Vanilla)
+    severity         Severity       @default(SafeForWork)
+    author           User           @relation(fields: [authorId], references: [id])
+    authorId         String
+    game             Game           @relation(fields: [gameId], references: [id])
+    gameId           Int
+    tags             PostTag[]
+    userWhoFavorited PostFavorite[]
+}
+
+model Tag {
+    id    String    @id
+    nsfw  Boolean   @default(false)
+    posts PostTag[]
+}
+
+model Upload {
+    id            String   @id
+    fileName      String   @db.Text
+    fileSize      Int
+    fileExtension String   @db.VarChar(50)
+    fileType      String   @db.VarChar(50)
+    createdAt     DateTime @default(now())
+}
+
+model PostFavorite {
+    post   Post   @relation(fields: [postId], references: [id])
+    postId String
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+
+    createdAt DateTime @default(now())
+
+    @@id([postId, userId])
+}
+
+model PostTag {
+    post   Post   @relation(fields: [postId], references: [id])
+    postId String
+    tag    Tag    @relation(fields: [tagId], references: [id])
+    tagId  String
+
+    @@id([postId, tagId])
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String         @id @default(cuid())
+    name          String?
+    email         String?        @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    posts         Post[]
+    favoritePosts PostFavorite[]
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}

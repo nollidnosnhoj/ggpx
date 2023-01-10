@@ -1,0 +1,32 @@
+{
+  "name": "@ggpx/api",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ggpx/auth": "*",
+    "@ggpx/cache": "*",
+    "@ggpx/db": "*",
+    "@ggpx/lib": "*",
+    "@ggpx/storage": "*",
+    "@trpc/client": "^10.8.1",
+    "@trpc/server": "^10.8.1",
+    "mime-types": "^2.1.35",
+    "nanoid": "^4.0.0",
+    "slug": "^8.2.2",
+    "superjson": "1.9.1",
+    "zod": "^3.20.0"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.1",
+    "@types/slug": "^5.0.3",
+    "eslint": "^8.30.0",
+    "typescript": "^4.9.4"
+  }
+}

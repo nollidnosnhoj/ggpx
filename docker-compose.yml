@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ggpx
+      POSTGRES_PASSWORD: ggpx
+      POSTGRES_DB: ggpx
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/posgressql
+  cache:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+volumes:
+  db:
+  cache:
+    driver: local
