@@ -1,6 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
-  "exclude": [],
+  "extends": "@ggpx/tsconfigs/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": "*",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules"],
   "include": [
     "next-env.d.ts",
     "../../packages/auth/next-auth.d.ts",

@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ggpx/config": "*",
     "slug": "^8.2.2",
     "zod": "^3.20.2"
+  },
+  "devDependencies": {
+    "@ggpx/eslint": "*",
+    "@ggpx/tsconfigs": "*"
   }
 }

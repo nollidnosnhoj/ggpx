@@ -16,6 +16,8 @@
     "@prisma/client": "^4.8.0"
   },
   "devDependencies": {
+    "@ggpx/eslint": "*",
+    "@ggpx/tsconfigs": "*",
     "dotenv-cli": "^6.0.0",
     "prisma": "^4.8.0",
     "typescript": "^4.9.4"
