@@ -3,19 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@ggpx/tsconfigs": "*",
     "ioredis": "^5.2.4",
     "superjson": "1.12.1"
   },
   "devDependencies": {
     "@ggpx/eslint": "*",
-    "@ggpx/tsconfigs": "*"
+    "@ggpx/tsconfigs": "*",
+    "typescript": "^4.9.4"
   }
 }

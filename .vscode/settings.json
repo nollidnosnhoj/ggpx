@@ -6,5 +6,8 @@
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
   "typescript.tsdk": "node_modules/typescript/lib"
 }

@@ -22,7 +22,8 @@
       "outputs": [".next/**", ".expo/**"]
     },
     "lint": {
-      "outputs": []
+      "outputs": [],
+      "cache": false
     },
     "clean": {
       "cache": false
@@ -35,5 +36,19 @@
       "cache": false
     }
   },
-  "globalEnv": ["DATABASE_URL", "NEXTAUTH_SECRET", "NEXTAUTH_URL"]
+  "globalEnv": [
+    "AWS_ACCESS_KEY",
+    "AWS_SECRET_KEY",
+    "AWS_REGION",
+    "UPLOAD_BUCKET",
+    "DATABASE_URL",
+    "DISCORD_CLIENT_ID",
+    "DISCORD_CLIENT_SECRET",
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "TWITCH_CLIENT_ID",
+    "TWITCH_CLIENT_SECRET"
+  ]
 }

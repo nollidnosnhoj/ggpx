@@ -1,29 +1,34 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
-  extends: ["prettier", "eslint:recommended"],
+  root: true,
+  extends: ["eslint:recommended", "next", "prettier", "turbo"],
+  settings: {
+    next: {
+      rootDir: ["apps/*/", "packages/*/"],
+    },
+  },
   overrides: [
     {
+      files: ["**/*.ts", "**/*.tsx"],
       extends: [
+        "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
-      files: ["**/*.ts", "**/*.tsx"],
+      plugins: ["@typescript-eslint"],
+      parser: "@typescript-eslint/parser",
       parserOptions: {
         tsconfigRootDir: __dirname,
-        project: [
-          "./tsconfig.json",
-          "./apps/*/tsconfig.json",
-          "./packages/*/tsconfig.json",
-        ],
+        project: ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
+        sourceType: "module",
       },
     },
   ],
-  root: true,
   reportUnusedDisableDirectives: true,
   ignorePatterns: [
     ".eslintrc.js",
-    "**/*.config.js",
-    "**/*.config.cjs",
+    "*.config.js",
+    "*.config.cjs",
     "packages/config/**",
   ],
 };
