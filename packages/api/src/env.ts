@@ -1,5 +1,5 @@
 import { type ZodFormattedError } from "zod";
-import { envSchema as serverSchema } from "@ggpx/schemas";
+import { envSchema as serverSchema } from "@ggpx/lib";
 
 const formatErrors = (errors: ZodFormattedError<Map<string, string>, string>) =>
   Object.entries(errors)
@@ -14,7 +14,7 @@ const _serverEnv = serverSchema.safeParse(process.env);
 if (!_serverEnv.success) {
   console.error(
     "❌ Invalid environment variables:\n",
-    ...formatErrors(_serverEnv.error.format()),
+    ...formatErrors(_serverEnv.error.format())
   );
   throw new Error("Invalid environment variables");
 }

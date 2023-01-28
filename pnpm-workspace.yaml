@@ -5,6 +5,6 @@ packages:
   - packages/cache
   - packages/config/*
   - packages/db
-  - packages/schemas
+  - packages/lib
   - packages/storage
   - packages/ui

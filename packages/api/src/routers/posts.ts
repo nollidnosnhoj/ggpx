@@ -1,5 +1,5 @@
-import { createPostsSchema, uploadImagesSchema } from "@ggpx/schemas";
-import type { Game, PrismaClient } from "@prisma/client";
+import { createPostsSchema, uploadImageSchema } from "@ggpx/lib";
+import type { Game, PrismaClient } from "@ggpx/db";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
@@ -12,7 +12,7 @@ import type { default as IgdbClient } from "../igdb";
 const getBatchGamesForPosts = async (
   map: Map<string, number>,
   prisma: PrismaClient,
-  igdb: IgdbClient,
+  igdb: IgdbClient
 ) => {
   const foundGamesMap = new Map<string, Game>();
   const iter = [...map];
@@ -46,9 +46,12 @@ const getBatchGamesForPosts = async (
 
 export const postsRouter = createTRPCRouter({
   upload: protectedProcedure
-    .input(uploadImagesSchema)
-    .mutation(async ({ ctx: { prisma, session, storage }, input }) => {
-      const promises = input.map(async ({ fileName, fileSize }) => {
+    .input(uploadImageSchema)
+    .mutation(
+      async ({
+        ctx: { prisma, session, storage },
+        input: { fileName, fileSize },
+      }) => {
         const id = nanoid(8);
         const [, ext] = splitFileName(fileName);
         const contentType = getContentType(ext);
@@ -85,21 +88,18 @@ export const postsRouter = createTRPCRouter({
           id,
           ...generateResponse,
         };
-      });
-
-      const results = await Promise.all(promises);
-      return results;
-    }),
+      }
+    ),
   create: protectedProcedure
     .input(createPostsSchema)
     .use(addIgdbClient)
     .mutation(async ({ ctx: { prisma, session, igdb }, input }) => {
       const batchGames = await getBatchGamesForPosts(
         new Map<string, number>(
-          input.map(({ uploadId, gameId }) => [uploadId, gameId]),
+          input.map(({ uploadId, gameId }) => [uploadId, gameId])
         ),
         prisma,
-        igdb,
+        igdb
       );
 
       const promises = input.map(
@@ -168,7 +168,7 @@ export const postsRouter = createTRPCRouter({
           const deleteUpload = prisma.upload.delete({ where: { id } });
 
           await prisma.$transaction([createPost, deleteUpload]);
-        },
+        }
       );
 
       await Promise.all(promises);

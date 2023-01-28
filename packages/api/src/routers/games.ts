@@ -1,14 +1,14 @@
+import type { PrismaClient } from "@ggpx/db";
 import { z } from "zod";
 import addIgdbClient from "../middlewares/igdb";
 import { protectedProcedure, publicProcedure, createTRPCRouter } from "../trpc";
 
-import type { PrismaClient } from "@prisma/client";
 import type { default as IgdbClient } from "../igdb";
 
 export const getGameByIds = async (
   ids: number[],
   prisma: PrismaClient,
-  igdb: IgdbClient,
+  igdb: IgdbClient
 ) => {
   const distinctIds = [...new Set(ids)];
   const dbGames = await prisma.game.findMany({
@@ -20,7 +20,7 @@ export const getGameByIds = async (
   });
   if (dbGames.length === ids.length) return dbGames;
   const nonDbGameIds = distinctIds.filter(
-    (id) => !dbGames.some((g) => g.id === id),
+    (id) => !dbGames.some((g) => g.id === id)
   );
   const result = await igdb.getGames(nonDbGameIds);
   if (!result) return false;

@@ -1,5 +1,5 @@
 {
-  "name": "@ggpx/schemas",
+  "name": "@ggpx/lib",
   "version": "1.0.0",
   "main": "./index.ts",
   "types": "./index.ts",
@@ -13,7 +13,7 @@
     "zod": "^3.20.2"
   },
   "devDependencies": {
-    "@ggpx/eslint": "*",
+    "@ggpx/eslint-config": "*",
     "@ggpx/tsconfigs": "*",
     "typescript": "^4.9.4"
   }

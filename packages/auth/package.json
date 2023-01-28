@@ -18,7 +18,7 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@ggpx/eslint": "*",
+    "@ggpx/eslint-config": "*",
     "@ggpx/tsconfigs": "*",
     "eslint": "^8.30.0",
     "typescript": "^4.9.4"

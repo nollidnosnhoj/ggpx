@@ -13,7 +13,7 @@
     "@aws-sdk/s3-presigned-post": "^3.245.0"
   },
   "devDependencies": {
-    "@ggpx/eslint": "*",
+    "@ggpx/eslint-config": "*",
     "@ggpx/tsconfigs": "*",
     "typescript": "^4.9.4"
   }

@@ -5,10 +5,15 @@ type FileReaderReadAsMethods = keyof Pick<
   "readAsDataURL" | "readAsText" | "readAsArrayBuffer" | "readAsBinaryString"
 >;
 
+type UseFileReaderOptions = {
+  onLoad?: (value: unknown) => void;
+  onError?: (error: DOMException | null) => void;
+};
+
 export const useFileReader = (
   file: File,
   method: FileReaderReadAsMethods = "readAsText",
-  onLoad?: (value: unknown) => void,
+  options: UseFileReaderOptions = {}
 ) => {
   const [result, setResult] = useState<string | ArrayBuffer | null>(null);
   const [error, setError] = useState<DOMException | null>(null);
@@ -23,15 +28,18 @@ export const useFileReader = (
     const reader = new FileReader();
     reader.onloadstart = () => setLoading(true);
     reader.onloadend = () => setLoading(false);
-    reader.onerror = () => setError(reader.error);
+    reader.onerror = () => {
+      setError(reader.error);
+      options.onError?.(reader.error);
+    };
 
     reader.onload = (event: ProgressEvent<FileReader>) => {
       setResult(event.target?.result ?? null);
-      onLoad?.(event.target?.result ?? null);
+      options.onLoad?.(event.target?.result ?? null);
     };
 
     reader[method](file);
-  }, [file, method, onLoad]);
+  }, [file, method, options]);
 
   return [result, { loading, error }] as const;
 };

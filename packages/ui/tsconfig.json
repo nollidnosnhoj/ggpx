@@ -1,8 +1,11 @@
 {
   "extends": "@ggpx/tsconfigs/react.json",
   "compilerOptions": {
-    "resolveJsonModule": true
+    "baseUrl": "*",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
-  "include": ["**/*.ts", "**/*.tsx", "src"],
-  "exclude": ["dist", "build", "node_modules"]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }
