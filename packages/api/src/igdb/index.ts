@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { ICacheStore } from "@ggpx/cache";
+import { fetchJson, FetchJsonError } from "@ggpx/lib";
 import { IGDB_TOKEN_KEY } from "./constants";
 import { accessTokenSchema, gamesSchema } from "./schemas";
 import type { AccessToken, IgdbGame } from "./types";
@@ -28,7 +29,7 @@ export default class IgdbClient {
   public async getGames(
     ids: number[],
     offset?: number,
-    take?: number,
+    take?: number
   ): Promise<IgdbGame[]> {
     if (!ids) return [];
     const idsQuery = `(${ids.join(",")})`;
@@ -57,7 +58,7 @@ export default class IgdbClient {
       body,
       false,
       accessToken,
-      gamesSchema,
+      gamesSchema
     );
     await this._cache.set(cacheKey, result, ttl);
     return result;
@@ -71,31 +72,26 @@ export default class IgdbClient {
 
   private async _getAccessToken(): Promise<AccessToken> {
     const cachedAccessToken = await this._cache.get<AccessToken>(
-      IGDB_TOKEN_KEY,
+      IGDB_TOKEN_KEY
     );
+
     if (cachedAccessToken) {
       return cachedAccessToken;
     }
+
     const { clientId, clientSecret } = this._config;
+
     const params = new URLSearchParams({
       client_id: clientId,
       client_secret: clientSecret,
       grant_type: "client_credentials",
     });
+
     const url = `https://id.twitch.tv/oauth2/token${params.toString()}`;
-    const response = await fetch(url, {
+
+    return await fetchJson(url, accessTokenSchema, {
       method: "POST",
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const responseJson = await response.json();
-    const validationResult = await accessTokenSchema.safeParseAsync(
-      responseJson,
-    );
-    if (validationResult.success) {
-      await this._cache.set(IGDB_TOKEN_KEY, validationResult.data.access_token);
-      return validationResult.data;
-    }
-    throw new Error("Unable to retrieve twitch access token.");
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -105,48 +101,53 @@ export default class IgdbClient {
     count: boolean,
     accessToken: AccessToken,
     schema?: z.ZodType<T>,
-    retry = true,
+    retry = true
   ): Promise<T> {
-    const url = `https://api.igdb.com/v4/${resource}/${count ? "count/" : ""}`;
-    const response = await fetch(url, {
-      body: query,
-      method: "post",
-      headers: {
-        "Client-ID": this._config.clientId,
-        Authorization: `Bearer ${accessToken.access_token}`,
-      },
-    });
+    try {
+      const url = `https://api.igdb.com/v4/${resource}/${
+        count ? "count/" : ""
+      }`;
+      return await fetchJson(url, schema, {
+        body: query,
+        method: "post",
+        headers: {
+          "Client-ID": this._config.clientId,
+          Authorization: `Bearer ${accessToken.access_token}`,
+        },
+      });
+    } catch (err) {
+      if (err instanceof FetchJsonError) {
+        const response = err.resposne;
+        const authFailed = response.status === 401 || response.status === 403;
+        if (authFailed && retry) {
+          accessToken = await this._getAccessToken();
+          return await this._request(
+            resource,
+            query,
+            count,
+            accessToken,
+            schema,
+            false
+          );
+        }
 
-    if (response.ok) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const obj = await response.json();
-      if (!schema) return obj as T;
-      const result = await schema.safeParseAsync(obj);
-      if (result.success) return result.data;
-      throw new Error("Unable to parse IGDB result with provided schema.");
-    }
+        if (authFailed) {
+          throw new Error("Not authorized in IGDB.");
+        }
 
-    const authFailed = response.status === 401 || response.status === 403;
-    if (authFailed && retry) {
-      accessToken = await this._getAccessToken();
-      return await this._request(
-        resource,
-        query,
-        count,
-        accessToken,
-        schema,
-        false,
-      );
-    }
-    if (authFailed) {
-      throw new Error("Not authorized in IGDB.");
-    }
+        if (response.status === 429) {
+          await wait(400);
+          return await this._request(
+            resource,
+            query,
+            count,
+            accessToken,
+            schema
+          );
+        }
+      }
 
-    if (response.status === 429) {
-      await wait(400);
-      return await this._request(resource, query, count, accessToken, schema);
+      throw new Error("Unable to execute Igdb query.");
     }
-
-    throw new Error("Unable to execute Igdb query.");
   }
 }
