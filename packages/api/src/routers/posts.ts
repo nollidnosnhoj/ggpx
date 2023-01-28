@@ -1,5 +1,5 @@
 import { createPostsSchema, uploadImageSchema } from "@ggpx/lib";
-import type { Game, PrismaClient } from "@ggpx/db";
+import type { Game, Prisma, PrismaClient } from "@ggpx/db";
 import { TRPCError } from "@trpc/server";
 import { nanoid } from "nanoid";
 import { z } from "zod";
@@ -10,12 +10,12 @@ import { splitFileName, getContentType } from "../file";
 import type { default as IgdbClient } from "../igdb";
 
 const getBatchGamesForPosts = async (
-  map: Map<string, number>,
+  input: z.infer<typeof createPostsSchema>,
   prisma: PrismaClient,
   igdb: IgdbClient
 ) => {
   const foundGamesMap = new Map<string, Game>();
-  const iter = [...map];
+  const iter = input.map(({ uploadId, gameId }) => [uploadId, gameId] as const);
   const dbGames = await prisma.game.findMany({
     where: { id: { in: iter.map((x) => x[1]) } },
   });
@@ -94,29 +94,19 @@ export const postsRouter = createTRPCRouter({
     .input(createPostsSchema)
     .use(addIgdbClient)
     .mutation(async ({ ctx: { prisma, session, igdb }, input }) => {
-      const batchGames = await getBatchGamesForPosts(
-        new Map<string, number>(
-          input.map(({ uploadId, gameId }) => [uploadId, gameId])
-        ),
-        prisma,
-        igdb
-      );
+      const batchGames = await getBatchGamesForPosts(input, prisma, igdb);
 
-      const promises = input.map(
-        async ({
-          uploadId: id,
-          title,
-          imageWidth,
-          imageHeight,
-          caption,
-          tags,
-        }) => {
-          const upload = await prisma.upload.findUnique({
-            where: {
-              id,
-            },
-          });
+      const uploads = await prisma.upload.findMany({
+        where: {
+          id: {
+            in: input.map((x) => x.uploadId),
+          },
+        },
+      });
 
+      const data = input.map<Prisma.PostCreateManyInput>(
+        ({ uploadId: id, title, imageWidth, imageHeight, caption, tags }) => {
+          const upload = uploads.find((x) => x.id === id);
           if (!upload) {
             throw new TRPCError({
               code: "BAD_REQUEST",
@@ -139,39 +129,48 @@ export const postsRouter = createTRPCRouter({
             });
           }
 
-          const createPost = prisma.post.create({
-            data: {
-              id,
-              fileExtension,
-              fileSize,
-              fileType,
-              imageHeight,
-              imageWidth,
-              title,
-              caption,
-              author: {
-                connect: {
-                  id: session.user.id,
-                },
-              },
-              game: {
-                connectOrCreate: {
-                  where: {
-                    id: game.id,
-                  },
-                  create: game,
-                },
+          return {
+            id,
+            fileExtension,
+            fileSize,
+            fileType,
+            imageHeight,
+            imageWidth,
+            title,
+            caption,
+            author: {
+              connect: {
+                id: session.user.id,
               },
             },
-          });
-
-          const deleteUpload = prisma.upload.delete({ where: { id } });
-
-          await prisma.$transaction([createPost, deleteUpload]);
+            authorId: session.user.id,
+            game: {
+              connectOrCreate: {
+                where: {
+                  id: game.id,
+                },
+                create: game,
+              },
+            },
+            gameId: game.id,
+          };
         }
       );
 
-      await Promise.all(promises);
+      const createMany = prisma.post.createMany({
+        data,
+        skipDuplicates: true,
+      });
+
+      const deleteUploads = prisma.upload.deleteMany({
+        where: {
+          id: {
+            in: input.map((x) => x.uploadId),
+          },
+        },
+      });
+
+      await prisma.$transaction([createMany, deleteUploads]);
     }),
   get: protectedProcedure
     .input(z.object({ id: z.string() }))

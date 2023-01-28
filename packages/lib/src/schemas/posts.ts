@@ -34,4 +34,11 @@ export const createPostSchema = z.object({
   tags: tagsSchema,
 });
 
-export const createPostsSchema = createPostSchema.array().min(1).max(10);
+export const createPostsSchema = createPostSchema
+  .array()
+  .min(1)
+  .max(10)
+  .refine((arr) => {
+    const set = new Set(arr.map((x) => x.uploadId));
+    return set.size === arr.length;
+  }, "Upload id must be unique.");
